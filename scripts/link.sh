@@ -3,7 +3,7 @@
 # Bestehende echte Ordner gleichen Namens werden nicht angefasst.
 set -euo pipefail
 
-repo="$(cd "$(dirname "$0")" && pwd)"
+repo="$(cd "$(dirname "$0")/.." && pwd)"
 target="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 mkdir -p "$target"
 
