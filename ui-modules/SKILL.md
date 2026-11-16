@@ -28,6 +28,7 @@ Stack: React, tanstack-router (file-basiertes Routing), tanstack-query, Tailwind
 | legt eine URL fest                                            | `routes/admin/` oder `routes/user/` |
 | ist ein Test                                                  | neben der getesteten Datei          |
 | testet die ganze Anwendung über den Router (Routen, Rahmen)   | `tests/`                            |
+| bildet im gemockten Modus das Backend nach (MSW-Handler)      | `mocks/`                            |
 
 Beispiel Todo-Liste: `api/todos.ts`, `views/todos.ts` mit `useTodos`, `features/todos/use-cases/use-add-todo.ts`,
 `features/todos/components/todos-page.tsx`, `routes/user/todos.tsx`.
@@ -58,6 +59,10 @@ Beispiel Todo-Liste: `api/todos.ts`, `views/todos.ts` mit `useTodos`, `features/
 - **`routes/`**: die Verzeichnisstruktur legt die URLs fest (`admin/`, `user/`). Jede Datei legt mit
   `createFileRoute` eine Route an und zeigt die Einstiegskomponente eines Features. Keine Logik, keine eigenen
   Komponenten.
+- **`mocks/`**: nur in Projekten mit gemocktem Backend (MSW). Eine Datei pro Aggregat wie in `api/`, mit den
+  Handlern für dessen Endpoints, eingetragen in `mocks/handlers.ts`. Dazu die gemeinsamen Teile des Mocks (`db.ts`,
+  `http.ts`, `session.ts`, `browser.ts`, `server.ts`). Die Handler prüfen Eingaben mit den Schemas aus `@shared` und
+  antworten mit denselben Statuscodes wie ein echtes Backend.
 - **`tests/`**: nur Tests, die die ganze Anwendung über den Router rendern (`routeTree`, `UserProvider`), z. B.
   die Routen, die Navigation oder das Dashboard. Eine Datei pro Thema. Alle anderen Tests liegen neben der
   getesteten Datei als `<name>.test.ts(x)`.
@@ -68,7 +73,10 @@ Beispiel Todo-Liste: `api/todos.ts`, `views/todos.ts` mit `useTodos`, `features/
 - `application` → `features`, `components`, `lib`, `views`, `common`
 - `features` → `components`, `lib`, `views`, `api`, `common`, `@shared`. Features importieren nicht aus anderen
   Features.
-- `lib` → `lib`, `common`, `@shared` und Bibliotheken. Nie `api`, `views` oder `components`.
+- `lib` → `lib`, `common`, `@shared` und Bibliotheken. Nie `api`, `views` oder `components`. Ausnahme: `lib/mock.ts`
+  startet den Mock aus `mocks/browser.ts`.
+- `mocks` → `mocks`, `@shared` und Bibliotheken. Tests aller Verzeichnisse dürfen aus `mocks/` importieren,
+  Produktivcode außer `lib/mock.ts` nie.
 - `components`, `lib`, `views`, `api`, `common` importieren nie aus `features`, `application` oder `routes`.
 
 # Beim Umsetzen eines Features oder Changes
